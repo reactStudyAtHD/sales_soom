@@ -3,6 +3,8 @@ import Table from 'react-bootstrap/Table';
 import TableEl from './TableEl';
 import FormControl from 'react-bootstrap/FormControl';
 import axios from 'axios';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const Sales = () => {
 	const [viewData, setViewData] = useState(null);
@@ -10,8 +12,10 @@ const Sales = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const currentYear = Number(new Date().getFullYear());
-	const currentMonth = Number(new Date().getMonth() + 1);
-	// const currentMonth = 5;
+	// const currentMonth = Number(new Date().getMonth() + 1);
+	const currentMonth = 2;
+	
+	
 	
 	// console.log(currentYear, currentMonth);
 	
@@ -26,7 +30,6 @@ const Sales = () => {
 					saleMonth: currentMonth
 				}
 			});
-			
 			const sortedData = response.data.sort((a, b) => Number(a.saleDate.split('-'[2])) > Number(b.saleDate.split('-'[2])) ? -1 : 1);
 			setData(sortedData);
 		} catch (e) {
@@ -78,16 +81,18 @@ const Sales = () => {
 				// setData(null);
 				// setLoading(true);
 				
-				const item = data.filter(item => item.saleId === id)[0];
-				console.log(item);
+				const item = data.filter(item => item.saleId === id);
 				// return;
-				
-				axios.post('http://ctk0327.iptime.org:8080/sales', item)
-					.then(() => fetchData())
+				setViewData(viewData.filter(item => item.saleId !== id));
+				console.log(item);
+				axios.delete('http://ctk0327.iptime.org:8080/sales', { data: item })
+					.then(() => {
+						console.log(data);
+					})
 					.catch(e => console.error(e));
 			} catch (e) {
 				setError(e);
-				console.error(e)
+				console.error(e);
 			}
 			setLoading(false);
 		};
@@ -109,11 +114,11 @@ const Sales = () => {
 					saleYear: 0,
 					serviceSales: 0,
 					tableCount: 0
-				})
+				});
 			}
 		});
 		console.log(copyViewData);
-		return copyViewData
+		return copyViewData;
 	};
 	
 	const handleInput = (e, id, objKey) => {
@@ -192,9 +197,10 @@ const Sales = () => {
 	if (loading) return <div>로딩중..</div>;
 	if (error) return <div>에러가 발생했습니다</div>;
 	if (viewData === null || viewData.length === 0) return <div>로딩중..</div>;
-	else return (
+	else
+		return (
 		<div>
-			<div style={{ textAlign: 'center', marginTop: '2vw' }}> {currentYear}년 {currentMonth}월</div>
+			{/*<div style={{ textAlign: 'center', marginTop: '2vw' }}> <ChevronLeftIcon />  <span> {currentYear}년 {currentMonth}월 </span> <ChevronRightIcon /> </div>*/}
 			<Table responsive style={{ width: '80vw', margin: '2vw auto' }}>
 				<thead>
 				<tr>

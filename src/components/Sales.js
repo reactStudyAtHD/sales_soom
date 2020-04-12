@@ -11,11 +11,9 @@ const Sales = () => {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
-	const currentYear = Number(new Date().getFullYear());
-	// const currentMonth = Number(new Date().getMonth() + 1);
-	const currentMonth = 2;
-	
-	
+	const [currentYear, setCurrentYear] = useState(Number(new Date().getFullYear()));
+	const [currentMonth, setCurrentMonth] = useState(Number(new Date().getMonth() + 1));
+	// const currentMonth = 2;
 	
 	// console.log(currentYear, currentMonth);
 	
@@ -30,6 +28,7 @@ const Sales = () => {
 					saleMonth: currentMonth
 				}
 			});
+			console.log('response: ', response);
 			const sortedData = response.data.sort((a, b) => Number(a.saleDate.split('-'[2])) > Number(b.saleDate.split('-'[2])) ? -1 : 1);
 			setData(sortedData);
 		} catch (e) {
@@ -40,7 +39,7 @@ const Sales = () => {
 	
 	useEffect(() => {
 		fetchData();
-	}, []);
+	}, [currentMonth, currentYear]);
 	
 	useEffect(() => {
 		if (data === null) return;
@@ -49,8 +48,9 @@ const Sales = () => {
 	}, [data]);
 	
 	const createDate = () => {
-		const lastDate = new Date(viewData[viewData.length - 1].saleDate);
-		const newDate = new Date(lastDate.setDate(lastDate.getDate() + 1));
+		console.log(viewData)
+		const lastDate = viewData.length > 0 ? new Date(viewData[viewData.length - 1].saleDate) : null;
+		const newDate = viewData.length > 0 ? new Date(lastDate.setDate(lastDate.getDate() + 1)) : new Date(`${currentYear}-${currentMonth}-01`);
 		const year = newDate.getFullYear();
 		const month = newDate.getMonth() + 1 < 10 ? `0${newDate.getMonth() + 1}` : newDate.getMonth() + 1;
 		const day = newDate.getDate() < 10 ? `0${newDate.getDate()}` : newDate.getDate();
@@ -97,28 +97,6 @@ const Sales = () => {
 			setLoading(false);
 		};
 		removeViewData();
-	};
-	
-	const filterRemovedItem = (id) => {
-		let copyViewData = [];
-		
-		viewData.map(item => {
-			if (item.saleId !== id) copyViewData.push(item);
-			else {
-				copyViewData.push({
-					saleId: data.includes(item.saleId) ? item.saleId : null, //뷰단에서 추가한 id는 서버에 없으니까 에러
-					saleDate: item.saleDate,
-					cardSales: 0,
-					moneySales: 0,
-					saleMonth: 0,
-					saleYear: 0,
-					serviceSales: 0,
-					tableCount: 0
-				});
-			}
-		});
-		console.log(copyViewData);
-		return copyViewData;
 	};
 	
 	const handleInput = (e, id, objKey) => {
@@ -194,90 +172,107 @@ const Sales = () => {
 		return Number(num).toLocaleString();
 	};
 	
+	const clickPreviousMonth = () => {
+		if (currentMonth-1 < 1){
+			setCurrentYear(currentYear-1);
+			setCurrentMonth(12)
+		} else setCurrentMonth(currentMonth - 1);
+	};
+	
+	const clickNextMonth = () => {
+		if (currentMonth+1 > 12) {
+			setCurrentYear(currentYear+1);
+			setCurrentMonth(1)
+		} else setCurrentMonth(currentMonth + 1);
+	};
+	
 	if (loading) return <div>로딩중..</div>;
 	if (error) return <div>에러가 발생했습니다</div>;
-	if (viewData === null || viewData.length === 0) return <div>로딩중..</div>;
+	// if (viewData === null || viewData.length === 0) return <div>로딩중..</div>;
 	else
 		return (
-		<div>
-			{/*<div style={{ textAlign: 'center', marginTop: '2vw' }}> <ChevronLeftIcon />  <span> {currentYear}년 {currentMonth}월 </span> <ChevronRightIcon /> </div>*/}
-			<Table responsive style={{ width: '80vw', margin: '2vw auto' }}>
-				<thead>
-				<tr>
-					<th>날짜</th>
-					<th>테이블 수</th>
-					<th>카드 매출</th>
-					<th>현금 매출</th>
-					<th>서비스 매출</th>
-					<th>총 매출</th>
-					<th>객 단가</th>
-				</tr>
-				</thead>
-				<tbody>
-				{viewData.map(item => (
-					<tr key={item.saleId}>
-						<td>{item.saleDate} </td>
-						<td>
-							<FormControl
-								onChange={e => {
-									handleInput(e, item.saleId, 'tableCount');
-								}}
-								size="sm"
-								type="number"
-								value={item.tableCount}
-							/>
-						</td>
-						<td>
-							<FormControl
-								onChange={e => {
-									handleInput(e, item.saleId, 'cardSales');
-								}}
-								size="sm"
-								type="number"
-								value={item.cardSales}
-							/>
-						</td>
-						<td>
-							<FormControl
-								onChange={e => {
-									handleInput(e, item.saleId, 'moneySales');
-								}}
-								size="sm"
-								type="number"
-								value={item.moneySales}
-							/>
-						</td>
-						<td>
-							<FormControl
-								onChange={e => {
-									handleInput(e, item.saleId, 'serviceSales');
-								}}
-								size="sm"
-								type="number"
-								value={item.serviceSales}
-							/>
-						</td>
-						<td>{calcTotalSales(item.saleId)}</td>
-						<td>{calcPerSales(item.saleId)}</td>
-						<td
-							onClick={() => {
-								removeDate(item.saleId);
-							}}
-						>
-							-
-						</td>
+			<div>
+				<div style={{ textAlign: 'center', marginTop: '2vw' }}><span
+					onClick={clickPreviousMonth}> <ChevronLeftIcon/></span>
+					<span>{currentYear}년 {currentMonth}월 </span>
+					<span onClick={clickNextMonth}><ChevronRightIcon/> </span></div>
+				<Table responsive style={{ width: '80vw', margin: '2vw auto' }}>
+					<thead>
+					<tr>
+						<th>날짜</th>
+						<th>테이블 수</th>
+						<th>카드 매출</th>
+						<th>현금 매출</th>
+						<th>서비스 매출</th>
+						<th>총 매출</th>
+						<th>객 단가</th>
 					</tr>
-				))}
-				<tr>
-					<td onClick={() => createDate()}> +</td>
-				</tr>
-				<tr>
-					<td onClick={() => saveData()}> 저장하기</td>
-				</tr>
-				</tbody>
-			</Table>
-		</div>
-	);
+					</thead>
+					<tbody>
+					{viewData !== null &&  viewData.map(item => (
+						<tr key={item.saleId}>
+							<td>{item.saleDate} </td>
+							<td>
+								<FormControl
+									onChange={e => {
+										handleInput(e, item.saleId, 'tableCount');
+									}}
+									size="sm"
+									type="number"
+									value={item.tableCount}
+								/>
+							</td>
+							<td>
+								<FormControl
+									onChange={e => {
+										handleInput(e, item.saleId, 'cardSales');
+									}}
+									size="sm"
+									type="number"
+									value={item.cardSales}
+								/>
+							</td>
+							<td>
+								<FormControl
+									onChange={e => {
+										handleInput(e, item.saleId, 'moneySales');
+									}}
+									size="sm"
+									type="number"
+									value={item.moneySales}
+								/>
+							</td>
+							<td>
+								<FormControl
+									onChange={e => {
+										handleInput(e, item.saleId, 'serviceSales');
+									}}
+									size="sm"
+									type="number"
+									value={item.serviceSales}
+								/>
+							</td>
+							<td>{calcTotalSales(item.saleId)}</td>
+							<td>{calcPerSales(item.saleId)}</td>
+							<td
+								onClick={() => {
+									removeDate(item.saleId);
+								}}
+							>
+								-
+							</td>
+						</tr>
+					))}
+					<tr>
+						<td onClick={() => createDate()}> +</td>
+					</tr>
+					<tr>
+						<td onClick={() => saveData()}> 저장하기</td>
+					</tr>
+					</tbody>
+				</Table>
+			</div>
+		);
 };
 
 export default React.memo(Sales);

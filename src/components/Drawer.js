@@ -17,7 +17,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import EventIcon from '@material-ui/icons/Event';
-import Sales from './Sales'
+import SalesManagement from './SalesManagement';
+import MonthlySales from './MonthlySales';
 
 const drawerWidth = 240;
 
@@ -89,7 +90,7 @@ export default function MiniDrawer() {
 	const classes = useStyles();
 	const theme = useTheme();
 	const [open, setOpen] = React.useState(false);
-	const [renderedComponent, setRenderedComponent] = useState(<Sales/>);
+	const [renderedComponent, setRenderedComponent] = useState(<SalesManagement/>);
 	
 	const handleDrawerOpen = () => {
 		setOpen(true);
@@ -100,8 +101,8 @@ export default function MiniDrawer() {
 	};
 	
 	const changeBody = (clickedMenu) => {
-		if (clickedMenu === '매출관리') setRenderedComponent(<Sales/>);
-		else setRenderedComponent(null)
+		if (clickedMenu === '매출관리') setRenderedComponent(<SalesManagement/>);
+		else setRenderedComponent(<MonthlySales/>);
 	};
 	
 	return (

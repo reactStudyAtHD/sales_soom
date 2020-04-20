@@ -6,7 +6,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Summary from './Summary';
 
-const Sales = () => {
+const SalesManagement = () => {
 		const [viewData, setViewData] = useState(null);
 		const [data, setData] = useState(null);
 		const [loading, setLoading] = useState(false);
@@ -305,4 +305,4 @@ const Sales = () => {
 	}
 ;
 
-export default React.memo(Sales);
+export default React.memo(SalesManagement);

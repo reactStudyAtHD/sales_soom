@@ -14,14 +14,7 @@ const Sales = () => {
 		const [currentYear, setCurrentYear] = useState(Number(new Date().getFullYear()));
 		const [currentMonth, setCurrentMonth] = useState(Number(new Date().getMonth() + 1));
 		// const currentMonth = 2;
-		
-		const [totalSales, setTotalSales] = useState(0);
-		const [totalPerSales, setTotalPerSales] = useState(0);
-		// let totalSales = 0;
-		// let totalPerSales = 0;
-		
-		// console.log(currentYear, currentMonth);
-		
+	
 		const fetchData = async () => {
 			try {
 				setError(null);
@@ -104,6 +97,8 @@ const Sales = () => {
 		};
 		
 		const handleInput = (e, id, objKey) => {
+			console.log(e.target.value);
+			
 			setViewData(
 				viewData.map(item => {
 					if (item.saleId === id) {
@@ -170,7 +165,9 @@ const Sales = () => {
 		};
 		
 		const formatNumber = (num) => {
-			return Number(num).toLocaleString();
+			// return num.toLocaleString();
+			return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			// return num
 		};
 		
 		const clickPreviousMonth = () => {
@@ -218,7 +215,7 @@ const Sales = () => {
 		
 		if (loading) return <div>로딩중..</div>;
 		if (error) return <div>에러가 발생했습니다</div>;
-// if (viewData === null || viewData.length === 0) return <div>로딩중..</div>;
+
 		else
 			return (
 				<div>
@@ -227,17 +224,7 @@ const Sales = () => {
 						<span>{currentYear}년 {currentMonth}월 </span>
 						<span onClick={clickNextMonth}><ChevronRightIcon/> </span>
 					</div>
-					{viewData !== null &&
-					// <div style={{ textAlign: 'center', marginTop: '2vw' }}>
-					// 	평균 테이블 수: {(viewData.reduce((a, b) => a + Number(b['tableCount']), 0))/viewData.length},
-					// 	평균 카드 매출: {(viewData.reduce((a, b) => a + Number(b['cardSales']), 0))/viewData.length},
-					// 	평균 현금 매출: {(viewData.reduce((a, b) => a + Number(b['moneySales']), 0))/viewData.length},
-					// 	평균 서비스 매출: {(viewData.reduce((a, b) => a + Number(b['serviceSales']), 0))/viewData.length},
-					// 	평균 객 단가: {},
-					// 	총 매출액: {}
-					// </div>
-					<Summary summary={getSummary()}/>
-					}
+					{viewData !== null && <Summary summary={getSummary()}/>}
 					<Table responsive style={{ width: '80vw', margin: '2vw auto' }}>
 						<thead>
 						<tr>
@@ -261,7 +248,7 @@ const Sales = () => {
 										}}
 										size="sm"
 										type="number"
-										value={item.tableCount}
+										value={formatNumber(item.tableCount)}
 									/>
 								</td>
 								<td>
@@ -270,8 +257,8 @@ const Sales = () => {
 											handleInput(e, item.saleId, 'cardSales');
 										}}
 										size="sm"
-										type="number"
-										value={item.cardSales}
+										// type="number"
+										value={formatNumber(item.cardSales)}
 									/>
 								</td>
 								<td>
@@ -280,8 +267,8 @@ const Sales = () => {
 											handleInput(e, item.saleId, 'moneySales');
 										}}
 										size="sm"
-										type="number"
-										value={item.moneySales}
+										// type="number"
+										value={formatNumber(item.moneySales)}
 									/>
 								</td>
 								<td>
@@ -290,12 +277,12 @@ const Sales = () => {
 											handleInput(e, item.saleId, 'serviceSales');
 										}}
 										size="sm"
-										type="number"
-										value={item.serviceSales}
+										// type="number"
+										value={formatNumber(item.serviceSales)}
 									/>
 								</td>
-								<td>{calcTotalSales(item.saleId)}</td>
-								<td>{calcPerSales(item.saleId)}</td>
+								<td>{formatNumber(calcTotalSales(item.saleId))}</td>
+								<td>{formatNumber(calcPerSales(item.saleId))}</td>
 								<td
 									onClick={() => {
 										removeDate(item.saleId);

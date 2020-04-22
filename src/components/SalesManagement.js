@@ -166,8 +166,8 @@ const SalesManagement = () => {
 		
 		const formatNumber = (num) => {
 			// return num.toLocaleString();
-			return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-			// return num
+			// return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			return num
 		};
 		
 		const clickPreviousMonth = () => {

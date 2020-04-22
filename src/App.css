@@ -375,18 +375,18 @@ custeom calendar css
  */
 
 .react-calendar {
-  width: 80vw !important;
+  width: 70vw !important;
   /*font-size: 2rem;*/
   margin: 0 auto;
 }
 
 .react-calendar__navigation {
   height: 12vh !important;
-  font-size: 1.3rem !important;
+  font-size: 1.2rem !important;
 }
 
 .react-calendar__year-view__months__month {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 
 .react-calendar__navigation__arrow {
@@ -394,9 +394,17 @@ custeom calendar css
 }
 
 .react-calendar__month-view__weekdays__weekday {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 .react-calendar__month-view__days__day {
-  padding: 1.7rem !important;
+  padding: 1.5rem !important;
   font-size: 1.1rem;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: unset !important;;
+}
+
+.salesText{
+  font-size: 0.8rem;
 }
